@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, cast
+from typing import Any
 
 
 class DataProcessor(ABC):
@@ -111,23 +111,23 @@ class LogProcessor(DataProcessor):
 
 
 class DataStream:
-    def __init__(self):
-        self._processors = []
-    
+    def __init__(self) -> None:
+        self._processors: list[DataProcessor] = []
+
     def register_processor(self, proc: DataProcessor) -> None:
         self._processors.append(proc)
-    
+
     def print_processors_stats(self) -> None:
         if not self._processors:
             print("No processor found, no data")
-        
+
         for proc in self._processors:
             name = type(proc).__name__
             print(
                 f"{name}: total {proc._processed} items processed, "
                 f"remaining {len(proc._data)} on processor"
             )
-    
+
     def process_stream(self, stream: list[Any]) -> None:
         for element in stream:
             processed = False
@@ -136,7 +136,7 @@ class DataStream:
                     proc.ingest(element)
                     processed = True
                     break
-            
+
             if not processed:
                 print(
                     "DataStream error - "
@@ -176,5 +176,26 @@ if __name__ == "__main__":
     print(f"Send first batch of data on stream: {batch}")
     stream.process_stream(batch)
     stream.print_processors_stats()
+    print()
 
+    print("Registering other data processors")
+    text = TextProcessor()
+    stream.register_processor(text)
+    log = LogProcessor()
+    stream.register_processor(log)
+    print("Send the same batch again")
+    print("== DataStream statistics ==")
+    stream.process_stream(batch)
+    stream.print_processors_stats()
+    print()
 
+    print("Consume some elements from the data "
+          "processors: Numeric 3, Text 2, Log 1")
+    print("== DataStream statistics ==")
+    for _ in range(3):
+        num.output()
+    for _ in range(2):
+        text.output()
+    for _ in range(1):
+        log.output()
+    stream.print_processors_stats()

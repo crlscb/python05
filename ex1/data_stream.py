@@ -76,9 +76,10 @@ class LogProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
         if isinstance(data, dict):
             return (
-                all(isinstance(x, str) for x in data.keys())
-                and
-                all(isinstance(x, str) for x in data.values())
+                "log_level" in data
+                and "log_message" in data
+                and all(isinstance(x, str) for x in data.keys())
+                and all(isinstance(x, str) for x in data.values())
             )
 
         if isinstance(data, list):
@@ -162,13 +163,11 @@ if __name__ == "__main__":
             {
                 "log_level": "WARNING",
                 "log_message": "Telnet access! Use ssh instead"
-            }
-        ],
-        [
+            },
             {
                 "log_level": "INFO",
                 "log_message": "User wil is connected"
-            },
+            }
         ],
         42,
         ["Hi", "five"]

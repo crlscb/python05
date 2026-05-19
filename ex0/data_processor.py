@@ -71,9 +71,10 @@ class LogProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
         if isinstance(data, dict):
             return (
-                all(isinstance(x, str) for x in data.keys())
-                and
-                all(isinstance(x, str) for x in data.values())
+                "log_level" in data
+                and "log_message" in data
+                and all(isinstance(x, str) for x in data.keys())
+                and all(isinstance(x, str) for x in data.values())
             )
 
         if isinstance(data, list):
@@ -108,8 +109,8 @@ if __name__ == "__main__":
 
     print("Testing Numeric Processor...")
     num = NumericProcessor()
-    print(f"Trying to validate input '42' {num.validate(42)}")
-    print(f"Trying to validate input 'Hello': {num.validate('hello')}")
+    print(f"Trying to validate input '42': {num.validate(42)}")
+    print(f"Trying to validate input 'Hello': {num.validate('Hello')}")
     print("Test invalid ingestion of string 'foo' without prior validation:")
     try:
         num.ingest(cast(Any, 'foo'))
@@ -124,7 +125,7 @@ if __name__ == "__main__":
         print(f"Numeric value {id_value}: {value}")
     print()
 
-    print("Testing Test Processor...")
+    print("Testing Text Processor...")
     text = TextProcessor()
     print(f"Trying to validate input '42': {text.validate(42)}")
     print("Processing data: ['Hello', 'Nexus', 'World']")
@@ -158,5 +159,5 @@ if __name__ == "__main__":
     )
     print("Extracting 2 values...")
     for _ in range(2):
-        if_value, value = log.output()
+        id_value, value = log.output()
         print(f"Log entry {id_value}: {value}")
